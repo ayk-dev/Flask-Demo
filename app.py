@@ -16,9 +16,19 @@ class TodoModel(db.Model):
     title = db.Column(db.String, nullable=False)
     priority = db.Column(db.String, nullable=False)
     description = db.Column(db.String, nullable=True)
+    creator_pk = db.Column(db.Integer, db.ForeignKey('creators.pk'))
+    creator = db.relationship('CreatorModel')
 
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+
+class CreatorModel(db.Model):
+    __tablename__ = "creators"
+    pk = db.Column(db.Integer, primary_key=True)
+    first_name = db.Column(db.String, nullable=False)
+    last_name = db.Column(db.String, nullable=False)
+    todos = db.relationship("TodoModel", backref="todo", lazy='dynamic')
 
 
 class TodoResource(Resource):
